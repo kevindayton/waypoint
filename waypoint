@@ -1,0 +1,42 @@
+#!/bin/bash
+# waypoint
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+HASH=$(git rev-parse --short HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B)
+MESSAGE="waypoint on $BRANCH: $HASH $COMMIT_MSG"
+
+save() {
+  git stash save -u "$MESSAGE"
+  git stash apply
+}
+
+help() {
+  echo
+  echo "waypoint is a way to save changes in the working tree in a git stash"
+  echo
+  echo "usage: [-s | --save] [-h | --help]"
+  echo
+  echo "options:"
+  echo "  save      Save a waypoint"
+  echo "  cleanup   Cleanup previous waypoints"
+  echo "  help      Show this menu"
+  echo
+}
+
+while getopts "h,-help,s,-save" option; do
+  case $option in
+  h | -help)
+    help
+    exit
+    ;;
+  s | -save)
+    save
+    exit
+    ;;
+  \?)
+    echo "Error: Invalid option"
+    exit
+    ;;
+  esac
+done
